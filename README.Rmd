@@ -68,21 +68,16 @@ for (i in seq_len(nrow(dat))) {
   repos <- rbind(
     repos,
     data.frame(
-      Repo             = sprintf(
+      Repo             = paste(sprintf(
         '<a href="%s" target="_blank">%s</a>',
         rep_info$html_url,
         rep_info$full_name
-      ),
+      ), sprintf('![GitHub last commit](https://img.shields.io/github/last-commit/%s)', rep_info$full_name)),
       Description = ifelse(
         length(rep_info$description), rep_info$description, ""
         ),
       Stars            = ifelse(length(rep_info$stargazers_count), rep_info$stargazers_count, ""),
       Forks            = ifelse(length(rep_info$forks_count), rep_info$forks_count, ""),
-      `Last update`    = ifelse(
-        length(rep_info$updated_at),
-        sprintf('![GitHub last commit](https://img.shields.io/github/last-commit/%s)', rep_info$full_name),
-        ""
-        ),
       Contributors     = contrib,
       stringsAsFactors = FALSE,
       check.names      = FALSE
