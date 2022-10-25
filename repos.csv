@@ -3,3 +3,5 @@ midas-network,covid19-scenario-modeling-hub,2022-10-25,https://covid19scenariomo
 midas-network,flu-scenario-modeling-hub,https://fluscenariomodelinghub.org/,tool
 gradlab,CtTrajectories,https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001333,method
 UofUEpi,epiworld,https://github.com/UofUEpi/epiworld,tool
+gradlab,CtTrajectories_Omicron,https://www.medrxiv.org/content/10.1101/2022.01.13.22269257v3,method
+gradlab,CtTrajectories_AllVariants,https://www.nejm.org/doi/full/10.1056/NEJMc2102507,method
