@@ -27,7 +27,9 @@ jobs:
 
       - name: Compilar
         run:  |
-          docker run -v$(pwd):/home/report -w/home/report ${{ matrix.cntr }} \
+          docker run -v$(pwd):/home/report \
+            -e SHEPHERD_TOKEN=$SHEPHERD_TOKEN\
+            -w/home/report ${{ matrix.cntr }} \
             Rscript -e 'rmarkdown::render("README.Rmd")'
 
       - name: Commit results
