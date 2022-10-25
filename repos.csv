@@ -1,0 +1,5 @@
+org,repo,date_added,org_url,type
+midas-network,covid19-scenario-modeling-hub,2022-10-25,https://covid19scenariomodelinghub.org/,tool
+midas-network,flu-scenario-modeling-hub,https://fluscenariomodelinghub.org/,tool
+gradlab,CtTrajectories,https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001333,method
+UofUEpi,epiworld,https://github.com/UofUEpi/epiworld,tool

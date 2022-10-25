@@ -1,0 +1,188 @@
+---
+output: github_document
+---
+
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(httr)
+
+dat <- read.csv("repos.csv")
+
+# Getting the github token
+token <- if (file.exists(".token")) {
+  readLines(".token")
+  } else {
+    Sys.getenv("SHEPHERD_TOKEN")
+  }
+token <- paste("Bearer", token)
+```
+
+# SHEPheRD GitHub activity
+
+# Repositories
+
+
+```{r}
+repos <- NULL
+for (i in seq_len(nrow(dat))) {
+  
+  # Params
+  org <- dat$org[i]
+  rep <- dat$repo[i]
+  
+  # Getting the repo information
+  rep_info <- GET(
+    url  = "https://api.github.com/", 
+    path = sprintf("repos/%s/%s", org, rep), 
+    add_headers(Authorization = token)
+  )
+  
+  # Did we succeeded?
+  if (status_code(rep_info) != 200)
+    next
+  
+  rep_info <- content(rep_info)
+  
+  # Getting members
+  contrib <- GET(
+    url  = "https://api.github.com/", 
+    path = sprintf("repos/%s/%s/contributors", org, rep), 
+    add_headers(Authorization = token)
+  )
+  
+  if (status_code(contrib) != 200) {
+    contrib <- ""
+  } else {
+    
+    contrib <- content(contrib)
+    if (length(contrib)) {
+      contrib <- sapply(contrib, \(d) {
+      sprintf('<a href="%s" target="_blank">%s</a>', d$html_url, d$login)
+    }) |> paste(collapse = ", ")  
+    } else
+      contrib <- ""
+    
+  }
+  
+  # Adding to the list
+  repos <- rbind(
+    repos,
+    data.frame(
+      Repo             = sprintf(
+        '<a href="%s" target="_blank">%s</a>',
+        rep_info$html_url,
+        rep_info$full_name
+      ),
+      Description = ifelse(
+        length(rep_info$description), rep_info$description, ""
+        ),
+      Stars            = ifelse(length(rep_info$stargazers_count), rep_info$stargazers_count, ""),
+      Forks            = ifelse(length(rep_info$forks_count), rep_info$forks_count, ""),
+      `Last update`    = ifelse(
+        length(rep_info$updated_at),
+        sprintf('![GitHub last commit](https://img.shields.io/github/last-commit/%s)', rep_info$full_name),
+        ""
+        ),
+      Contributors     = contrib,
+      stringsAsFactors = FALSE,
+      check.names      = FALSE
+    )
+  )
+  
+}
+```
+
+```{r}
+knitr::kable(repos, row.names = FALSE)
+```
+
+
+# Organizations 
+
+```{r orgs, echo = FALSE}
+orgs <- sort(unique(dat$org))
+
+tab <- NULL
+
+for (org in orgs) {
+  
+  res <- GET(
+    url  = "https://api.github.com/", 
+    path = sprintf("orgs/%s", org), 
+    add_headers(Authorization = token)
+  )
+  
+  # Did we succeeded?
+  if (status_code(res) != 200)
+    next
+  
+  # Getting members
+  mem <- GET(
+    url  = "https://api.github.com/", 
+    path = sprintf("orgs/%s/public_members", org), 
+    add_headers(Authorization = token)
+  )
+  
+  if (status_code(mem) == 200) {
+  
+    mem <- sapply(content(mem), \(m) {
+      sprintf(
+        "<a href=\"%s\" target=\"_blank\">%s</a>",
+        m$html_url,
+        m$login
+        )
+    }) |> paste(collapse = ", ")
+    
+  } else 
+    mem <- ""
+  
+  # Getting collaborators
+  collabs <- GET(
+    url  = "https://api.github.com/", 
+    path = sprintf("orgs/%s/outside_collaborators", org), 
+    add_headers(Authorization = token)
+  )
+  
+  if (status_code(collabs) == 200) {
+  
+    collabs <- sapply(content(collabs), \(m) {
+      sprintf(
+        "<a href=\"%s\" target=\"_blank\">%s</a>",
+        m$html_url,
+        m$login
+        )
+    }) |> paste(collapse = ", ")
+    
+  } else 
+    collabs <- ""
+  
+  mem <- paste(union(collabs, mem), collapse = ",")
+  
+  res <- content(res)
+  
+  # Appending data
+  tab <- rbind(
+    tab,
+    data.frame(
+      Org = sprintf(
+        "<a href=\"%s\" target=\"_blank\">%s</a>",
+        res$html_url,
+        ifelse(length(res$name), res$name, org)
+        ),
+      `Pub. Repos. #` = res$public_repos, 
+      `Members and Collabs` = mem,
+      stringsAsFactors = FALSE,
+      check.names = FALSE
+      )
+  )
+  
+}
+```
+
+```{r echo = FALSE}
+knitr::kable(tab, row.names = FALSE, escape = FALSE)
+```
+
+
+
+
