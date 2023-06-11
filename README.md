@@ -17,4 +17,4 @@
 | Org                                                                          | Pub. Repos. \# | Members and Collabs                                                 |
 | :--------------------------------------------------------------------------- | -------------: | :------------------------------------------------------------------ |
 | <a href="https://github.com/gradlab" target="_blank">gradlab</a>             |             25 | ,<a href="https://github.com/kevincma" target="_blank">kevincma</a> |
-| <a href="https://github.com/midas-network" target="_blank">MIDAS Network</a> |             29 |                                                                     |
+| <a href="https://github.com/midas-network" target="_blank">MIDAS Network</a> |             30 |                                                                     |
